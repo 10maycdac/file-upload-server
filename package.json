@@ -1,0 +1,23 @@
+{
+	"name": "file-upload-server",
+	"version": "1.0.0",
+	"description": "REST server",
+	"main": "server.js",
+	"dependencies": {
+		"express"           : "^4.17.1",
+		"express-fileupload": "^1.1.6"
+	},
+	"devDependencies": {
+		"concurrently": "^5.1.0",
+		"nodemon"     : "^2.0.2"
+	},
+	"scripts": {
+		"test"  : "echo \"Error: no test specified\" && exit 1",
+		"start" : "node server.js",
+		"server": "nodemon server.js",
+		"client": "npm start -prefix ../bootcamp-task-2",
+		"dev"   : "concurrently \"npm run server\" \"npm run client\""
+	},
+	"author" : "Tanmay",
+	"license": "ISC"
+}
