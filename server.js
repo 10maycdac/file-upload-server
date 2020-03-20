@@ -1,12 +1,14 @@
-const express = require('express');
+const express    = require('express');
 const fileUpload = require('express-fileupload');
-const parser = new (require('simple-excel-to-json').XlsParser)();
-
-const app = express();
+const parser     = new (require('simple-excel-to-json').XlsParser)();
+const mysql      = require('mysql');
+const app        = express();
 
 app.use(fileUpload());
 
+
 let receivedFileName = "";
+
 // Upload Endpoint
 app.post('/upload', (req, res) => {
     if (req.files === null) {
@@ -24,12 +26,37 @@ app.post('/upload', (req, res) => {
 
         res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
 
-
         //kadu's code
+        let doc           = parser.parseXls2Json(receivedFileName);
+        let productsArray = doc[0];
 
-        let doc = parser.parseXls2Json(receivedFileName);
-        let productArray = doc[0];
-        console.log(productArray);
+        console.log(productsArray);
+
+        var conn = mysql.createConnection({
+
+            host    : 'localhost',
+            user    : 'root',
+            password: 'password',
+            database: 'products'
+
+        });
+
+        conn.connect();
+
+        let values = [];
+
+        productsArray.forEach(product => {
+            let productArray = Object.values(product);
+            values.push(productArray)
+        });
+
+        var sql = "INSERT INTO product_details (Model_Number, Amazon_ID, Walmart_ID, Wayfair, Product_Name, Brand, Collection, Category, Sub_Category, Margin) VALUES ?";
+
+        conn.query(sql, [values], function (err) {
+            if (err) throw err;
+            conn.end();
+        });
+
     });
 });
 
