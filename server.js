@@ -33,15 +33,20 @@ app.post('/upload', (req, res) => {
         console.log(productsArray);
 
         var conn = mysql.createConnection({
+			host: 'localhost',
+			user: 'root',
+			password: 'root',
+			database: 'products'
+		});
 
-            host    : 'localhost',
-            user    : 'root',
-            password: 'password',
-            database: 'products'
+        conn.connect(function(err) {
+			if (err) {
+				console.error('error connecting: ' + err.stack);
+				return;
+			}
 
-        });
-
-        conn.connect();
+			console.log('connected as id ' + conn.threadId);
+		});
 
         let values = [];
 
@@ -50,7 +55,8 @@ app.post('/upload', (req, res) => {
             values.push(productArray)
         });
 
-        var sql = "INSERT INTO product_details (Model_Number, Amazon_ID, Walmart_ID, Wayfair, Product_Name, Brand, Collection, Category, Sub_Category, Margin) VALUES ?";
+        var sql =
+			'INSERT INTO product_details (Model_Number, Amazon_ID, Walmart_ID, Wayfair, Product_Name, Brand, Collection, Category, Sub_Category, Margin) VALUES ?';
 
         conn.query(sql, [values], function (err) {
             if (err) throw err;
